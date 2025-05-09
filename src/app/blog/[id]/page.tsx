@@ -4,12 +4,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { marked } from 'marked';
-
-type DynamicPageProps = {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
 type PageProps = {
   params: { id: string };
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -22,7 +16,7 @@ const getPostData = async (postId: string): Promise<BlogPost | undefined> => {
 };
 
 export async function generateMetadata(
-  { params }: DynamicPageProps
+  { params }: PageProps
 ): Promise<Metadata> {
   const awaitedParams = await params;
   const postId = awaitedParams.id;
