@@ -1,4 +1,4 @@
- import { blogPostsData, BlogPost } from '@/data/blogPosts';
+import { blogPostsData, BlogPost } from '@/data/blogPosts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -57,8 +57,7 @@ export async function generateStaticParams(): Promise<Array<{ id: string }>> {
 }
 
 export default async function BlogPostPage({ params }: { params: { id: string } }) {
-  const awaitedParams = await params;
-  const postId = awaitedParams.id;
+  const postId = params.id;
 
   if (!postId) notFound();
   const post = await getPostData(postId);
