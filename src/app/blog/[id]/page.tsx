@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // import { blogPostsData, BlogPost } from '@/data/blogPosts';
 // import Image from 'next/image';
 // import Link from 'next/link';
@@ -155,26 +156,31 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { marked } from 'marked';
 
+// Type for searchParams object once resolved
+type ResolvedSearchParams = { [key: string]: string | string[] | undefined };
+
 // Type for props passed to generateMetadata and the page component
-// CRITICAL CHANGE: The `params` prop itself is a Promise
+// CRITICAL CHANGE: Both `params` and `searchParams` (if present) are Promises
 type BlogPostPageProps = {
-  params: Promise<{ id: string }>; // params is a Promise that resolves to an object like { id: "actual-id" }
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<ResolvedSearchParams>; // searchParams is also a Promise
 };
 
-// Function to fetch post data (remains the same, expects a resolved postId string)
 const getPostData = async (postId: string): Promise<BlogPost | undefined> => {
   if (!postId || typeof postId !== 'string') return undefined;
   if (!Array.isArray(blogPostsData)) return undefined;
   return blogPostsData.find((post) => post.id === postId);
 };
 
-// generateMetadata function corrected to await params
 export async function generateMetadata(
-  { params: paramsPromise }: BlogPostPageProps // Destructure to paramsPromise for clarity
+  { params: paramsPromise, searchParams: searchParamsPromise }: BlogPostPageProps
 ): Promise<Metadata> {
-  const resolvedParams = await paramsPromise; // Await the Promise to get the actual params object
-  const postId = resolvedParams.id;           // Access id from the resolved object
+  const resolvedParams = await paramsPromise;
+  const postId = resolvedParams.id;
+
+  // You can also await searchParams if you need them for metadata
+  // const resolvedSearchParams = searchParamsPromise ? await searchParamsPromise : undefined;
+  // Example: if (resolvedSearchParams?.someQuery === 'value') { /* ... */ }
 
   if (!postId) {
     return {
@@ -203,10 +209,6 @@ export async function generateMetadata(
   };
 }
 
-// generateStaticParams function (remains the same)
-// This function returns an array of objects, e.g., [{ id: 'my-post-id' }].
-// Next.js then uses these to pre-render pages.
-// The fact that `params` might be a Promise in the page/metadata functions is an internal Next.js handling detail.
 export async function generateStaticParams(): Promise<Array<{ id: string }>> {
   if (!Array.isArray(blogPostsData)) return [];
   return blogPostsData
@@ -214,10 +216,14 @@ export async function generateStaticParams(): Promise<Array<{ id: string }>> {
     .map((p) => ({ id: p.id }));
 }
 
-// BlogPostPage component corrected to await params
-export default async function BlogPostPage({ params: paramsPromise }: BlogPostPageProps) {
-  const resolvedParams = await paramsPromise; // Await the Promise to get the actual params object
-  const postId = resolvedParams.id;           // Access id from the resolved object
+export default async function BlogPostPage({ params: paramsPromise, searchParams: searchParamsPromise }: BlogPostPageProps) {
+  const resolvedParams = await paramsPromise;
+  const postId = resolvedParams.id;
+
+  // If you need searchParams in your page component:
+  const resolvedSearchParams = searchParamsPromise ? await searchParamsPromise : undefined;
+  // Now you can use resolvedSearchParams, e.g.:
+  // if (resolvedSearchParams?.preview === 'true') { /* load draft content */ }
 
   if (!postId) {
     notFound();
