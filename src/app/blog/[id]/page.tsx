@@ -10,6 +10,11 @@ type DynamicPageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
+type PageProps = {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
 const getPostData = async (postId: string): Promise<BlogPost | undefined> => {
   if (!postId || typeof postId !== 'string') return undefined;
   if (!Array.isArray(blogPostsData)) return undefined;
@@ -38,6 +43,7 @@ export async function generateMetadata(
   return {
     title: `${post.title} | Techscholars Blog`,
     description: post.excerpt,
+ metadataBase: new URL('https://techscholars-git-master-akash-singhs-projects-f8d7696a.vercel.app/'),
     openGraph: {
       title: `${post.title} | Techscholars Blog`,
       description: post.excerpt,
@@ -56,15 +62,14 @@ export async function generateStaticParams(): Promise<Array<{ id: string }>> {
     .map((p) => ({ id: p.id }));
 }
 
-export default async function BlogPostPage({ params }: { params: { id: string } }) {
-  const postId = params.id;
+export default async function BlogPostPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const postId = awaitedParams.id;
 
   if (!postId) notFound();
   const post = await getPostData(postId);
   if (!post) notFound();
-
   const htmlContent = marked.parse(post.content);
-
   return (
     <div className="bg-gray-50 py-16 sm:py-20 md:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
