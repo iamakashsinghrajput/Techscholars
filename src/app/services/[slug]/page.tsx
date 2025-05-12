@@ -14,8 +14,8 @@ type ResolvedServiceParams = { slug: string };
 type ResolvedSearchParams = { [key: string]: string | string[] | undefined };
 
 type ServiceDetailPageProps = {
-  params: Promise<ResolvedServiceParams>; // params IS a Promise
-  searchParams?: Promise<ResolvedSearchParams>; // searchParams IS also a Promise if present
+  params: Promise<ResolvedServiceParams>;
+  searchParams?: Promise<ResolvedSearchParams>;
 };
 
 const getServiceBySlug = async (slug: string): Promise<Service | undefined> => {
