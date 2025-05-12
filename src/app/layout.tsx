@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     template: '%s | Techscholars',
   },
   description: 'Techscholars delivers cutting-edge technology solutions, web development, AI integration, and expert consultancy to elevate your business.',
+  metadataBase: new URL('https://techscholars.vercel.app'),
 };
 
 export default function RootLayout({
